@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Coach Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="chatbot-page">
+    <div class="chatbot-container">
+        <h1>AI Career Coach Chatbot</h1>
+        <div class="chatbox" id="chatbox">
+            <div><em>Welcome! Ask me anything about your career path or job search.</em></div>
+        </div>
+        <form class="input-row" onsubmit="sendMessage(event)">
+            <input type="text" id="userInput" placeholder="Type your message..." autocomplete="off" required />
+            <button type="submit">Send</button>
+        </form>
+        <a href="index.html" class="back-link">&larr; Back to Home</a>
+    </div>
+    <script>
+        function sendMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById('userInput');
+            const chatbox = document.getElementById('chatbox');
+            const userMsg = input.value.trim();
+            if (!userMsg) return;
+            chatbox.innerHTML += `<div><strong>You:</strong> ${userMsg}</div>`;
+            input.value = '';
+            // Simulate AI response
+            setTimeout(() => {
+                chatbox.innerHTML += `<div><strong>Coach:</strong> <em>This is a demo. Your AI response will appear here!</em></div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }, 700);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
