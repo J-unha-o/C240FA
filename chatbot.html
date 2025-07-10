@@ -1,76 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Career Coach Chatbot</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <!-- Styles moved to style.css -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Career Coach Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-    <body class="chatbot-page">
-        <nav class="navbar">
+<body class="chatbot-page">
+  <nav class="navbar">
             <div class="navbar-content">
-                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="App Logo" class="app-logo" />
+                <img src="image/photo_6278245101960547014_y.jpg" alt="AI Career Coach Logo" class="navbar-logo" />
                 <span class="app-title">AI Career Coach Chatbot</span>
             </div>
-        </nav>
-        <div class="chatbot-container">
-            <div class="chatbox" id="chatbox">
-                <div><em>Welcome! Ask me anything about your career path or job search.</em></div>
-            </div>
-            <form class="input-row" onsubmit="sendMessage(event)">
-                <input type="text" id="userInput" placeholder="Type your message..." autocomplete="off" required />
-                <button type="submit">Send</button>
-            </form>
-            <a href="index.html" class="back-link">&larr; Back to Home</a>
-        </div>
+  </nav>
 
-        <script>
-        async function sendMessage(event) {
-            event.preventDefault();
-            const input = document.getElementById('userInput');
-            const chatbox = document.getElementById('chatbox');
-            const userMsg = input.value.trim();
-            if (!userMsg) return;
+  <div class="chatbot-container">
+    <div class="chatbox" id="chatbox">
+      <div><em>Welcome! Ask me anything about your career path or job search.</em></div>
+    </div>
+    <div class="input-row">
+      <input type="text" id="userInput" placeholder="Type your message..." autocomplete="off" required />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+  </div>
 
-            // Show user message
-            chatbox.innerHTML += `<div><strong>You:</strong> ${userMsg}</div>`;
-            input.value = '';
-            chatbox.scrollTop = chatbox.scrollHeight;
+  <script>
+    const chatBox = document.getElementById('chatbox');
 
-            // Show loading message
-            chatbox.innerHTML += `<div id="loading"><em>Coach is thinking...</em></div>`;
-            chatbox.scrollTop = chatbox.scrollHeight;
+    function appendMessage(text, sender = 'bot') {
+      const message = document.createElement('div');
+      message.classList.add('chat-message', sender);
 
-            try {
-                const response = await fetch('https://n8n.codeblazar.org/webhook/chatbot', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ message: userMsg })
-                });
+      const bubble = document.createElement('div');
+      bubble.classList.add('bubble');
+      bubble.innerHTML = text;
 
-                if (!response.ok) throw new Error('Network response was not ok');
-                const data = await response.json();
+      message.appendChild(bubble);
+      chatBox.appendChild(message);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-                // Clean loading message
-                document.getElementById('loading')?.remove();
+    function appendImage(imageUrl) {
+      const message = document.createElement('div');
+      message.classList.add('chat-message', 'bot');
 
-                // Extract and format AI reply with line breaks
-                let aiReply = data.reply || data.message || data.text || "Hmm... I couldn't process that.";
-                aiReply = aiReply.replace(/\n/g, "<br>"); // Fix: Convert \n to <br>
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.className = 'roadmap-img';
+      img.alt = 'Career Roadmap';
 
-                chatbox.innerHTML += `<div><strong>Coach:</strong> <em>${aiReply}</em></div>`;
-            } catch (error) {
-                document.getElementById('loading')?.remove();
-                chatbox.innerHTML += `<div><strong>Coach:</strong> <em>Sorry, there was a problem contacting the AI service.</em></div>`;
-                console.error('Fetch error:', error);
-            }
+      message.appendChild(img);
+      chatBox.appendChild(message);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-            chatbox.scrollTop = chatbox.scrollHeight;
+    function appendTyping() {
+      const typingDiv = document.createElement('div');
+      typingDiv.classList.add('typing');
+      typingDiv.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      `;
+      chatBox.appendChild(typingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return typingDiv;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage(message, 'user');
+      input.value = '';
+
+      const typingBubble = appendTyping();
+
+      try {
+        const res = await fetch('https://n8n.codeblazar.org/webhook-test/chatbot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobRole: message })
+        });
+
+        const data = await res.json();
+        chatBox.removeChild(typingBubble);
+
+        if (typeof data === 'string') {
+          appendMessage(data, 'bot');
         }
-    </script>
+
+        if (data.message) {
+          appendMessage(data.message.replace(/\n/g, '<br>'), 'bot');
+        }
+
+        if (data.roadmapImage) {
+          appendImage(data.roadmapImage.trim());
+        }
+
+      } catch (err) {
+        chatBox.removeChild(typingBubble);
+        appendMessage("❌ Couldn't reach the AI service.");
+        console.error(err);
+      }
+    }
+
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script>
 </body>
 </html>
