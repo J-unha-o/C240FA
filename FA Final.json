@@ -1,0 +1,791 @@
+{
+  "name": "FA Final",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatbot",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "32a52b3a-aa98-4be5-bff2-b83062fd13d5",
+      "name": "Chatbot Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        100
+      ],
+      "webhookId": "ab0fb204-1e0c-42c4-988f-2fd3902a41f8"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.jobRole }}",
+        "options": {
+          "systemMessage": "You are a supportive and knowledgeable career advisor chatbot. Your mission is to help students explore career options, discover their interests, and reduce anxiety about career uncertainty. You must only use data from a structured dataset(Job spreadsheet) that contains the following fields for each job:\n\nIndustry\n\nJob Role\n\nRelevant Degrees/Majors\n\nRecommended Entry-Level and Soft Skills\n\nTypical Entry Pathways\n\nCareer Progression\n\nWork Environment\n\nStudent-Friendly Job Description\n\nMotivational Reasons to Choose the Career\n\nWhether the Job is Trending\n\nActionable Steps Students Can Take to Build Confidence and Skills\n\n🔒 Rules for Dataset Use\nOnly respond using information available in the dataset.\n\nIf the dataset does not contain the information needed, respond with:\n\n\"Sorry, currently the chatbot still does not have relevant information to answer this question.\"\n\nDo not make assumptions or use general knowledge.\n\nDo not generate or complete missing fields.\nAlways use the following structure for consistency:\n\nEach field must start with a bold label, using a dash list even if there's only one item.\n\nUse clear section breaks, spacing, and headers when giving full job profiles.\n\nAvoid combining multiple fields into a single paragraph or line.\n🎯 Response Behavior by Input Type\n1. 🔹 If the user asks for job roles in an industry (e.g., “What are the job roles in Technology?”):\ntext\nCopy\nEdit\n🔍 Job Roles in the [Industry] Industry\n\nHere are some job roles you can explore:\n\n- [Job Role 1]  \n- [Job Role 2] \n- [Job Role 3]  \n...  \n- [Job Role N]\n\nIf the industry is not found in the dataset, respond:\n\n\"Sorry, currently the chatbot still does not have relevant information to answer this question.\"\n\n2. 🔹 If the user asks for a specific field (e.g., “What are the soft skills for Data Analyst?”):\nRespond with only the requested field in this format:\n\ntext\nCopy\nEdit\n- [Field Label]:\n  - [Item 1]  \n  - [Item 2]  \n  - [Item 3]\nExample:\n\ntext\nCopy\nEdit\n- 🛠️ Recommended Entry-Level & Soft Skills for Data Analyst:\n  - Excel\n  - Data visualization\n  - Problem-solving\n3. 🔹 If the user asks for a full career suggestion (e.g., “I like design and tech — what jobs fit?”):\nRespond in the following structured format. Each field must be labeled and use bullet points, even for single-value items:\n\ntext\nCopy\nEdit\n💼 Job Role: [Job Role]\n\n- Industry:\n  - [Industry Name]\n\n- 👩‍💻 Student-Friendly Job Description:\n  - [Job Description]\n\n- 🎓 Relevant Degrees/Majors:\n  - [Degree 1]  \n  - [Degree 2]  \n\n- 🚪 Entry Pathways:\n  - [Pathway 1]  \n  - [Pathway 2]  \n\n- 🛠️ Recommended Entry-Level & Soft Skills:\n  - [Skill 1]  \n  - [Skill 2]  \n  - [Skill 3]  \n\n- 📈 Career Progression:\n  - [Stage 1]  \n  - [Stage 2]  \n  - [Stage 3]\n\n- 🏢 Work Environment:\n  - [Environment Type 1]  \n  - [Environment Type 2]\n\n- 📊 Is This Job Trending?\n  - ✅ Yes / ❌ No\n\n- ✅ Actionable Steps Students Can Take Now:\n  - [Step 1]  \n  - [Step 2]\n\n- 💡 Motivational Reason to Choose This Career:\n  - [Reason 1]  \n  - [Reason 2]  \n  - [Reason 3]\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        380,
+        340
+      ],
+      "id": "70d02b61-ec0c-4254-8dc8-3d4e7743c0e8",
+      "name": "Chatbot career advice"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        260,
+        640
+      ],
+      "id": "97c82d7e-e634-4324-aa2c-271f69a393b0",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jCsz0C7EG2QJOIH6",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "14A3sSGMlwlylikdgBvKj8CBaJZD0-o15B7CZLc964XU",
+          "mode": "list",
+          "cachedResultName": "Job spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14A3sSGMlwlylikdgBvKj8CBaJZD0-o15B7CZLc964XU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14A3sSGMlwlylikdgBvKj8CBaJZD0-o15B7CZLc964XU/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        660,
+        620
+      ],
+      "id": "e3229d58-f73e-4b16-a2e5-439d59da6265",
+      "name": "Job spreadsheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "JMUdVpyBIO86e01L",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f39fb3f7-ef4b-4dad-8185-8049ace06b00",
+              "name": "message",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        700,
+        340
+      ],
+      "id": "3151c999-205c-45c9-b10f-6c1df99b56de",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://api.mycareersfuture.gov.sg/v2/search",
+        "options": {}
+      },
+      "id": "1ed69dd2-491b-4d6b-9e9f-d5ec520932ac",
+      "name": "Get Jobs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [\n  {\n    json: {\n      memoryText: items[0].json.results.map(job => {\n        const title = job.title;\n        // *** EDITED: Changed 'job.company?.name' to 'job.postedCompa?.name' ***\n        const company = job.postedCompany?.name || \"Unknown\"; // This line was edited\n        // Salary properties remain as corrected\n        const min = job.salary?.minimum || \"N/A\";\n        const max = job.salary?.maximum || \"N/A\";\n        return `${title} at ${company} — $${min} to $${max}`;\n      }).join('\\n')\n    }\n  }\n];"
+      },
+      "id": "9019b83a-991c-4b7a-b8f8-6534967b65e4",
+      "name": "Format Job List",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        140,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        380,
+        220
+      ],
+      "id": "83246faf-aab7-4d68-90da-c2804a1b0f75",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jCsz0C7EG2QJOIH6",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "181d7a8c-6f34-4255-a981-6664db128c1e",
+              "name": "message",
+              "value": "={{ $('Format Job List').item.json.memoryText }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        0
+      ],
+      "id": "56f0acaf-bca3-482d-86ad-d590640a22b0",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Format Job List').item.json.memoryText }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        200
+      ],
+      "id": "6dcc1f3c-0d6f-4090-80cf-4ac90070b1d6",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "= {{ $json.memoryText }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        360,
+        0
+      ],
+      "id": "f25c4300-8a85-46c7-97a6-36ad2b6b3bfb",
+      "name": "Job listing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.jobRole }}",
+              "operation": "contains",
+              "value2": "job roles"
+            },
+            {
+              "value1": "={{ $json.body.jobRole }}",
+              "operation": "contains",
+              "value2": "career progression"
+            },
+            {
+              "value1": "={{ $json.body.jobRole }}",
+              "operation": "contains",
+              "value2": "relevant major"
+            },
+            {
+              "value1": "={{ $json.body.jobRole }}",
+              "operation": "contains",
+              "value2": "job description"
+            },
+            {
+              "value1": "={{ $json.body.jobRole }}",
+              "operation": "contains",
+              "value2": "actionable steps"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "e3c62d49-b6ad-4856-bffa-1062b5d700aa",
+      "name": "Route to Career Map?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.jobRole }}",
+              "operation": "contains",
+              "value2": "job listing"
+            }
+          ]
+        }
+      },
+      "id": "1777d719-f885-4886-9f1f-8a7f2d3192ee",
+      "name": "Route to job listing",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\n{{ $json.body.jobRole }}",
+        "options": {
+          "systemMessage": "You are a helpful and knowledgeable AI career advisor for polytechnic students in Singapore. Always return clean, formatted HTML only (no markdown, no plain text). Don’t mind local slangs or casual phrasing.\n\n🤖 Behavior Rules\n✅ If the user gives ONE job role (e.g., \"I want to be a UX Designer\"):\nReturn this structure:\n\n<h3>Becoming a UX Designer</h3>\n\n<h4>Top Hard and Soft Skills (2024)</h4>\n<ul>\n  <li><b>Hard Skill:</b> Figma proficiency</li>\n  <li><b>Soft Skill:</b> Empathy in design thinking</li>\n</ul>\n\n<h4>Common Beginner Skill Gaps</h4>\n<ul>\n  <li>Weak UX research foundations</li>\n  <li>Lack of real projects in portfolio</li>\n  <li>Inconsistent wireframing skills</li>\n</ul>\n\n<h4>Recommended Free/Affordable Courses</h4>\n<ul>\n  <li><a href=\"https://www.coursera.org/learn/intro-user-experience\">Coursera: Intro to UX</a> – Learn UX principles in 4 weeks</li>\n  <li><a href=\"https://www.skillsfuture.gov.sg/series/digitalmedia\">SkillsFuture: Digital Media</a> – Short courses supported by Singapore government</li>\n</ul>\n\n<h4>Career Roadmap</h4>\n<ul>\n  <li><b>Step 1:</b> Learn foundational tools (Figma, HTML/CSS)</li>\n  <li><b>Step 2:</b> Build 1–2 case studies (e.g., redesign a local app like SG Bus)</li>\n  <li><b>Step 3:</b> Apply for internships via <a href=\"https://www.mycareersfuture.gov.sg/\">MyCareersFuture.sg</a></li>\n</ul>\n\n<h4>Career Progression & Salary (Monthly SGD)</h4>\n<ul>\n  <li>Entry-Level: $2,800–$3,500</li>\n  <li>Mid-Level: $4,500–$5,800</li>\n  <li>Senior-Level: $6,500+</li>\n</ul>\n\n<h4>Local Companies Hiring UX Designers</h4>\n<ul>\n  <li>GovTech Singapore</li>\n  <li>Shopee</li>\n  <li>DBS Bank</li>\n  <li>Grab</li>\n</ul>\n\n<h4>Kickstart Ideas</h4>\n<ul>\n  <li>Portfolio Idea: Redesign RP’s LMS or Poly Mobile App</li>\n  <li>Competition: <a href=\"https://nus.edu.sg/nusenterprise/what-we-do/programmes/ideasinc\">NUS Ideasinc Challenge</a></li>\n  <li>Local Internship: <a href=\"https://www.mycareersfuture.gov.sg/\">MyCareersFuture.sg</a></li>\n</ul>\n\n📊 If the user provides TWO or MORE job roles:\nReturn a comparison table with neat borders like this: <h3>Career Comparison: UX Designer vs Software Engineer</h3>\n<table style=\"width:100%; border-collapse: collapse; border: 1px solid #999;\">\n  <thead>\n    <tr>\n      <th style=\"border: 1px solid #999; padding: 8px;\">Criteria</th>\n      <th style=\"border: 1px solid #999; padding: 8px;\">UX Designer</th>\n      <th style=\"border: 1px solid #999; padding: 8px;\">Software Engineer</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Monthly Salary</td>\n      <td style=\"border: 1px solid #999; padding: 8px;\">$2,800–$6,500</td>\n      <td style=\"border: 1px solid #999; padding: 8px;\">$3,500–$7,500</td>\n    </tr>\n    <tr>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Key Skills</td>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Figma, UX Research</td>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Python, Java, Git</td>\n    </tr>\n    <tr>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Industries</td>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Tech, Gov, E-commerce</td>\n      <td style=\"border: 1px solid #999; padding: 8px;\">FinTech, Cybersecurity, SaaS</td>\n    </tr>\n    <tr>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Entry Pathway</td>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Diploma in Design/IT</td>\n      <td style=\"border: 1px solid #999; padding: 8px;\">Diploma in CS/Engineering</td>\n    </tr>\n  </tbody>\n</table>\n\n<p><i>Source: MyCareersFuture.sg, Glassdoor.sg, and RP internship data (2024).</i></p>\n\n🖼️ If the user includes the word “infographic” or “image”: then include that word for the output for this ai agent node and say u will generate the image.\n\n❓ If the user’s input is unclear or not a job title:\nReply:\n<p>Sorry, I couldn’t identify any job roles in your message. Try rephrasing with clear titles like “UX Designer” or “Data Analyst”.</p>\n\n🔍 Bonus Features (For Teens):\n\nMention familiar companies like Shopee, Grab, GovTech, Gojek, DBS.\n\nInclude real RP stories or internships (e.g., “RP students interned at ST Engineering”)\n\nUse localised examples like SkillsFuture.sg, MyCareersFuture.sg\n\nOffer instant call-to-actions like:\n\n<p>🚀 Want to start now? <a href=\"https://www.figma.com/community/file/1064584563053174436\">👉 Build a basic UX portfolio (Free)</a></p>\n\nKeep the output to less than 4000 characters.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        1100
+      ],
+      "id": "2534d740-6c55-4d4b-85bd-58bb631a8973",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "746ac0d2-f97d-49a0-80fa-501383575239",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "image",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "baab8107-6d66-4fce-b964-1a816d8a816e",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "infographic",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        1260
+      ],
+      "id": "f3a688c8-ae29-4ff8-a72f-f2ab39c4d4f7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f8e0662-7f3f-4543-8b7c-5610c5f97fc5",
+              "name": "message",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        420,
+        1520
+      ],
+      "id": "6d38e614-7a00-43b8-baf1-6c09ffd0d128",
+      "name": "Return Text Only"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"message\": \"Here's your AI-generated career roadmap!\",\n  \"roadmapImage\": \"{{ $json.roadmapImage.trim() }}\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1300,
+        1300
+      ],
+      "id": "79c4b203-8473-4586-aa1c-fb1816babbc6",
+      "name": "Respond to Webhook",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        620,
+        1520
+      ],
+      "id": "ecd8601d-3d34-4c77-aeba-d81ade9aba6e",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $('AI Agent').item.json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        300,
+        1260
+      ],
+      "id": "8ae9cff9-1a55-4dac-aa36-2ec76973e047",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": "cwAylePkJpqdl8bd",
+          "name": "OpenAi account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "=### ✅ Rendered Roadmap\n\n<img src=\"{{ $json.roadmapImage }}\" style=\"max-width: 500px;\" />\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        700,
+        1280
+      ],
+      "id": "2e68c694-5381-4012-8538-0ebd5f5748e2",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: {\n    roadmapImage: 'data:image/png;base64,' + item.binary.data.data\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        1260
+      ],
+      "id": "6a3f7d05-0766-4413-952b-16e495483af3",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "09ba07a0b45641c10d9874a332ca6bbf"
+            },
+            {
+              "name": "image",
+              "value": "={{ $json[\"roadmapImage\"].split(\",\")[1] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        1280
+      ],
+      "id": "ed3f3ef4-c82d-431e-b8e0-6710c055a08c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        1380
+      ],
+      "id": "2d975421-d56a-4c03-bdc4-527d1877d58d",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jCsz0C7EG2QJOIH6",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1f6e477-4196-4975-a51a-4b3f9e152cf8",
+              "name": "roadmapImage",
+              "value": "={{ $json[\"data\"][\"url\"] }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        1280
+      ],
+      "id": "36eb8316-d11e-48cf-bcc0-94e97768ecb3",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Chatbot Webhook').item.json.body.jobRole }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        460,
+        560
+      ],
+      "id": "afa3f152-dfae-43a7-b658-e0ac08097686",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chatbot Webhook": {
+      "main": [
+        [
+          {
+            "node": "Route to job listing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Chatbot career advice",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job spreadsheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chatbot career advice",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chatbot career advice": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Jobs": {
+      "main": [
+        [
+          {
+            "node": "Format Job List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Job List": {
+      "main": [
+        [
+          {
+            "node": "Job listing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Job listing",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Job listing",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job listing": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to job listing": {
+      "main": [
+        [
+          {
+            "node": "Get Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route to Career Map?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route to Career Map?1": {
+      "main": [
+        [
+          {
+            "node": "Chatbot career advice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Text Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Return Text Only": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Chatbot career advice",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5b62297e-5238-4588-965d-bd6b247331a8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "013ba7111d7412b0c21fb6277bf991b003e1a4d5f0ba93954d8bcf66a6d4f18d"
+  },
+  "id": "ThQHmQj4M0lRRhtJ",
+  "tags": []
+}
