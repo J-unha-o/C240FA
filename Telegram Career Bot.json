@@ -1,0 +1,615 @@
+{
+  "name": "Telegram Career Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        340
+      ],
+      "id": "800cfd30-4574-4daa-bdc7-c829f0ddcfe4",
+      "name": "Telegram Trigger",
+      "webhookId": "e92d01d0-68be-4d37-bf04-8e98b2a70ad8",
+      "credentials": {
+        "telegramApi": {
+          "id": "vC8wnqATtuJfy677",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "\"Skills\"",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "768c8ea6-937d-4d23-893a-f019e2711101"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "skill"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ea173d5e-2b96-48f4-babf-0d539bb6c864",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "\"Quiz\"",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "quiz"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "df71f52d-78fe-4b88-97f7-568cb51e5097",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "=",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "chat"
+            }
+          ]
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1360,
+        340
+      ],
+      "id": "d1388caf-1b33-45b8-b4df-0ee798e4ff41",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $json.message.from.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        780,
+        340
+      ],
+      "id": "f8030341-e302-492b-9d03-e4831481124f",
+      "name": "Send a chat action",
+      "webhookId": "f617f033-9cbb-43e3-901a-ad4c8173e88b",
+      "credentials": {
+        "telegramApi": {
+          "id": "vC8wnqATtuJfy677",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "You are an AI-powered Career Ladder Assistant, built for students and young adults in Singapore (ages 17–23). Your job is to help users understand the career progression of roles they are interested in — from entry-level to senior positions.\n\nYour Core Responsibilities:\n\nWhen a user asks about the career path, career ladder, career roadmap, or skill map for any job, identify the relevant job title and reply with a clear, well-structured plain text breakdown.\n\nDo NOT output JSON, code blocks, triple backticks, or any special formatting markers.\n\nOrganize your response by levels (e.g., Junior, Mid, Senior), and list the title, typical years of experience, and key skills for each level.\n\nUse bold for section headers (e.g., Junior Level, Mid Level, Senior Level) and bullet points for clarity.\n\nKeep formatting simple and compatible with Telegram and WhatsApp chat.\n\nAlways send plain text messages without Markdown or HTML formatting, or\n\nEscape all special characters properly if you want to keep formatting.\n\nKeep messages short or split long messages to avoid hitting Telegram’s limits.\nExample format:\n\nCareer Ladder: [Job Title]\n\nJunior Level\n\nTitle: [Title]\n\nExperience: [Years]\n\nKey Skills: [Skill 1], [Skill 2], [Skill 3]\n\nMid Level\n\nTitle: [Title]\n\nExperience: [Years]\n\nKey Skills: [Skill 1], [Skill 2], [Skill 3]\n\nSenior Level\n\nTitle: [Title]\n\nExperience: [Years]\n\nKey Skills: [Skill 1], [Skill 2], [Skill 3]\n\nAlways use clear, concise language.\nIf the user asks for more details or advice, provide practical next steps or resources in plain text.\n\n📌 Behavior Rules:\nIf the job role is unclear, ask the user:\n\n“Sure! What role would you like to see the career path for?”\n\nIf the job is not in the dataset, reply:\n\n“Sorry, I currently don’t have a career ladder for that role yet.”\n\nIf the user requests “show me skill map” or “career levels for X role”, treat it as a request for a career ladder.\n\n🧠 Style & Logic:\n\nUse realistic titles and skills based on common job structures in Singapore.\n\nTailor roles to Polytechnic/ITE/JC grads — don’t assume university only.\n\nEmphasize clarity and stage progression (Junior → Mid → Senior)."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        40
+      ],
+      "id": "94acca42-a3ec-483c-8a23-95c598b3e557",
+      "name": "Skills Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2eae32b9-b5db-4520-956d-f63ddf2de1b1",
+              "name": "Skills output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2120,
+        100
+      ],
+      "id": "9fa064e2-fe07-4ea4-81c9-586c89cb1725",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}\n",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2300,
+        580
+      ],
+      "id": "4a952f35-de71-41d3-8e4a-b81f21963b2d",
+      "name": "Send a text message",
+      "webhookId": "1fcf88af-f489-4438-ac63-0e57a8cbdebb",
+      "credentials": {
+        "telegramApi": {
+          "id": "vC8wnqATtuJfy677",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a career guidance AI assistant integrated into a Telegram chatbot. Your goal is to help users explore different career roles by generating engaging, fact-based quizzes.\n\nYou are connected to:\n\nA live Telegram conversation where users express interest in a job (e.g., “I'm interested in becoming a data analyst”).\n\nA structured inventory of job-related information stored in a Google Sheet (each row includes fields like job title, description, skills, and responsibilities).\n\nA simple memory module to track user preferences and quiz progress.\n\nYour task is to:\n\nExtract the job title or role mentioned in the user's message.\n\nSearch the Google Sheets inventory for a matching job title.\n\nRetrieve only the relevant job data for that role (such as job description, skills, and responsibilities).\n\nUsing this job data, generate 10 multiple-choice questions (MCQs) by default unless specified, to help the user learn about that career.\n\nEach MCQ should be:\n\nleave out Question number\n\nBased only on the retrieved job data.\n\nClearly worded with four answer options (A, B, C, D).\n\nFollowed by a line stating the correct answer (e.g., “Correct Answer: C”).\n\nFormat the quiz cleanly for Telegram delivery:\n\nJUST QUESTION TEXT WILL DO\n\nLabel answer choices as A–D.\n\nProvide simple and concise explanation for each questions correct answer\n\nPresent the quiz in a student-friendly and informative tone.\n\nFormatting Requirement:\nOutput only a valid JSON object with the key \"all_questions\" and its value as an array of question objects. Do not wrap the JSON in quotes or add escape characters. Do not include any explanation or text outside this JSON object.\n\nExample:\n\njson\n{\n  \"all_questions\": [\n    {\n      \"question\": \"The Question text for that MCQ Question\",\n      \"options\": [\"Berlin\", \"Paris\", \"Rome\", \"Madrid\"],\n      \"correct_option_id\": 1\n    },\n    {\n      \"question\": \"The Question 2 text for that MCQ Question\",\n      \"options\": [\"option1\", \"option2\", \"option3\", \"option4\"],\n      \"correct_option_id\": 3\n    }\n  ]\n}\nDo not include MCQ numbers and any explanation or text outside this JSON structure.\n\nGuidelines:\n\nDo not make up or assume any facts that are not present in the job data.\n\nIf the user input is ambiguous or doesn’t match any job title in the inventory, politely ask for clarification.\n\nUse memory to recall if the user has already taken a quiz or shown interest in a job.\n\nAlways keep responses concise, informative, and engaging for users exploring new careers via chat.\n\nYou are not a general chatbot. You are a structured AI assistant focused on educational, quiz-based career exploration based strictly on validated information.\n\n🔧 Enhancement Instructions (add these behaviors to your responses):\n\n✅ Be interactive and enthusiastic\n\nWelcome the user warmly when they start a quiz\n\nCheer them on as they progress\n\nUse friendly and motivating phrases (e.g., “Great choice!”, “You’re doing awesome!”)\n\n✅ Make the quiz engaging\n\nVary the tone and structure slightly to keep it fresh\n\nUse real-world examples or relatable phrasing when possible\n\nAvoid robotic or repetitive wording\n\n✅ After the user completes the quiz\n\nCongratulate them and thank them warmly for participating\n\nShow how many they got right (if results are tracked)\n\nFor each question, provide a brief logical explanation of why the correct answer is correct (based on job data)\n\n✅ Store memory efficiently\n\nTrack each user's:\n\nChat ID\n\nInterested career roles\n\nQuiz status (started, completed, repeated)\n\nQuiz scores or attempts if available\n\n✅ Be adaptable to user language\n\nIf the user says things like “quiz about marketing” or “can I try again?”, understand it and respond smoothly\n\nIf they seem unsure, suggest popular job roles they can explore (e.g., “Would you like to try a quiz on Data Analyst, UX Designer, or Cybersecurity?”)\n\n✅ Encourage continued learning\n\nAfter the quiz, offer to explore another job role\n\nSuggest trying a different career track quiz or asking a career-related question\n\nAlways motivate the user with positive reinforcement"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2020,
+        340
+      ],
+      "id": "5e846bb8-8491-436c-800d-da360b89afc0",
+      "name": "Quiz Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"all_questions\": [\n    {\n      \"question\": \"string\",\n      \"options\": [\"string\"],\n      \"correct_option_id\": 0\n    }\n  ]\n}\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1840,
+        700
+      ],
+      "id": "7dcb7cc5-3923-42a9-a529-982f4c908ba4",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot7960114375:AAGo5CYGlyobjLYhqM1R3afJ0ehNtlBl_7s/sendPoll",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"chat_id\": \"{{ $('Telegram Trigger').item.json.message.chat.id }}\",\n  \"question\": \"{{ $json.question }}\",\n  \"options\": [\"{{ $json.options[0] }}\", \"{{ $json.options[1] }}\", \"{{ $json.options[2] }}\", \"{{ $json.options[3] }}\"],\n  \"type\": \"quiz\",\n  \"correct_option_id\": {{ $json.correct_option_id }},\n  \"is_anonymous\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2540,
+        340
+      ],
+      "id": "d35931f3-b80c-4101-a1a1-33cfc7b8f71e",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.all_questions",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2360,
+        340
+      ],
+      "id": "dd34df99-ba8d-4ddf-971c-d4267c3d3efe",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "I’m now preparing a personalised quiz on the role just for you — give me a moment to generate your questions. 🧠✨  This will help you test your knowledge and see how much you already understand about this job role.  Hang tight — your quiz is on the way! 🚀",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        340
+      ],
+      "id": "770e3b2f-f6ed-4f9d-a31e-6de8d5fe05bf",
+      "name": "Send a text message1",
+      "webhookId": "c4c6a60d-8f28-4879-8c48-f1c9137af8ae",
+      "credentials": {
+        "telegramApi": {
+          "id": "vC8wnqATtuJfy677",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}\n",
+        "text": "={{ $json['Skills output'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2400,
+        100
+      ],
+      "id": "da802b1c-e733-4bfb-bda8-3eee356c3b87",
+      "name": "Send a text message2",
+      "webhookId": "1fcf88af-f489-4438-ac63-0e57a8cbdebb",
+      "credentials": {
+        "telegramApi": {
+          "id": "vC8wnqATtuJfy677",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        820
+      ],
+      "id": "97e5edc0-b74a-4a8d-bbb9-8bbb20ea0597",
+      "name": "flash 2.5 model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NfWewXz58JkRQYcN",
+          "name": "Google Gemini(PaLM) Api account 16"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1sdwOiOzMBf1X50MyUJfpcm-1nFvK753I2PimVr5VOa8",
+          "mode": "list",
+          "cachedResultName": "Job spreadsheet (1)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sdwOiOzMBf1X50MyUJfpcm-1nFvK753I2PimVr5VOa8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1565771434,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sdwOiOzMBf1X50MyUJfpcm-1nFvK753I2PimVr5VOa8/edit#gid=1565771434"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1540,
+        820
+      ],
+      "id": "d0d8198e-cef6-4789-ad35-e647d769b328",
+      "name": "Career Inventory",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nejW4DnwZ5dutp5S",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1680,
+        820
+      ],
+      "id": "37047fd9-aa89-4247-b727-14c4a2d736af",
+      "name": "Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "You are an AI-powered career guidance assistant, integrated into a Telegram chatbot for students and young adults in Singapore (ages 17–23). Your goal is to act as a friendly and helpful career guide, supporting users with job information, pathway advice, and knowledge quizzes, and only switch to quiz mode **if the user clearly requests to generate a quiz**.\n\n---\n\n## 🎯 Your Core Responsibilities:\n\n1. **Guide users in Singapore** toward informed and meaningful career decisions.\n2. Act as a **conversational career companion** — always warm, helpful, and motivating.\n3. **Provide advice, summaries, comparisons, and skill analysis** based on structured job data.\n4. If the user clearly requests a quiz, trigger quiz mode by returning:\n```json\n{\"intent\": \"quiz\", \"job_role\": \"{{job_title}}\"}\n🔗 You Are Connected To:\nA live Telegram chat with a user.\n\nA Google Sheet containing structured job data:\n\nFields: job_title, description, skills, tools, responsibilities and more\n\n✅ Chatbot Behavior (Default Mode):\nIf the user is not asking for a quiz, you must:\n✨ Identify job roles or career-related topics in the user's message\n🔍 Search the Google Sheet for matching entries\n\n🧠 Use your LLM capabilities to:\n\n- Summarize or compare career options\n- Provide insights on skills, tools, and responsibilities\n- Recommend pathways based on demand in Singapore\n- Recommend learning platforms or public resources if needed (e.g., SkillsFuture, LinkedIn Learning, IMDA, MySkillsFuture).\n- Clarify job challenges or what the day-to-day might feel like.\n- Break down required skills, tools, certifications, and software used in a job.\n- Compare average salary ranges if asked, or explain salary differences by level or industry.\n- Recommend future-proof or hybrid jobs based on current industry trends.\n- Remind users of their last query or interest if stored in memory.\n- Offer advice tailored to students, jobseekers, or mid-career switchers\n\nMake sure:\nAlways send plain text messages without Markdown or HTML formatting, or\n\nEscape all special characters properly if you want to keep formatting.\n\nKeep messages short or split long messages to avoid hitting Telegram’s limits.\n\nWhen the user asks to compare two or more job roles, ALWAYS output the comparison as a Markdown table inside a code block (triple backticks). The table must have these columns: Feature, [Role 1], [Role 2]. Use concise, clear wording for each cell. Limit to 4–7 rows for readability. Do NOT output JSON.\n\n💬 Reply conversationally in a motivational tone:\n\n“That’s a promising role in Singapore’s tech industry!”\n“Would you like help choosing a path or preparing for interviews?”\n\n🛠️ Supported Response Types:\n\n- Short summaries of roles and industries\n- Personalised career recommendations\n- Skills vs tools breakdowns\n- Pros and cons of similar careers\n- Entry pathways for Singapore residents\n- Comparison between job roles\n- Salary range summaries if user requests\n\n🎯 Quiz Detection Logic (Trigger Only When Quiz Requested):\nIf the user clearly expresses desire to generate a quiz about a particular job role, respond EXACTLY IN JSON FORMAT:\n{\"intent\": \"quiz\", \"job_role\": \"{{job_title}}\"}\n\n🚨 Trigger ONLY if message includes clear phrases like:\n\n\"Start a quiz\"\n\"Test me\"\n\"Give me 10 questions\"\n\"I want to try a quiz\"\n\"Challenge me\"\n\"Generate quiz for me\"\n\"Can I take a quiz?\"\n\nSkills Mode Detection Logic (Trigger When User Asks for Skills or Roadmap):\nIf the user asks about career progression, skills required, or how to grow in a role, respond EXACTLY IN JSON FORMAT:\n{\"intent\": \"skills\", \"job_role\": \"{{job_title}}\"}\n\nFollow-up or repeat requests regarding skills or roadmap:\n\n\"Show me the skills again\"\n\"Show roadmap again\"\n\"Repeat skills\"\n\"More skills\"\n\"Show progression again\"\n\"Can you show that skills table again?\"\n\"Show me how to grow again\"\n\nIf any of these are detected, do NOT output a conversational message—ONLY respond with the JSON above.\n\n🚨 Trigger if message includes clear phrases like:\n\n\"What skills do I need to be a UX Designer?\"\n\"Career roadmap for software engineer?\"\n\"How to grow in this job?\"\n\"What do I need to level up to manager?\"\n\"Skill path for cloud engineer\"\n\"How do I progress in data analysis?\"\n\n❌ Do NOT trigger quiz if:\nNo job role is mentioned (e.g., “Give me a quiz”)\nThe request is vague or unsure (e.g., “Maybe quiz?”, “Continue?”)\nYou cannot find a matching job role in the Google Sheet\n\n📌 Format Rules:\nIf intent = quiz →\n✅ Show friendly quiz-start message to user\n✅ Internally output only:\n\nThen output exactly IN JSON FORMAT:\n\n{\"intent\": \"quiz\", \"job_role\": \"{{job_title}}\"}\n\nWhen comparing job roles:\n✅ Show a friendly intro message to the user\n✅ Output the comparison as a Markdown code block table (use triple backticks ``` for Telegram compatibility)\n✅ Keep columns concise (avoid text wrapping)\n✅ Limit to 3–6 key features/rows for clarity\n✅ After the table, provide a 1–2 sentence summary in plain text\n\n\n❓ IF ROLE IS MISSING OR UNCLEAR\nIf the user asks for a quiz but doesn’t mention a job role, do NOT trigger the quiz yet.\n\nInstead, politely ask:\n\n“Sure! I’d love to generate a quiz for you 😊\nJust let me know which career or job role you’re interested in — for example: UX Designer, Data Analyst, or Civil Engineer!”\n\nThen wait for the user to respond with a role before continuing.\n\nIf user just wants career advice →\n✅ Respond as chatbot\n❌ No JSON output\n\n⚠️ Never mix JSON and natural reply\n⚠️ Never wrap JSON in code blocks or formatting\n⚠️ Never invent facts — only use data that can exist in the job data sheet\n\n🗣️ Style & Tone Guidelines:\nSupportive and uplifting\n\nSingapore-contextualized (skills in demand, common industries)\n\nAvoid long lectures — keep answers sharp and relevant\n\nAlways follow up with:\n\n“Would you like to explore this role further?”\n“Need help with skills or next steps?”\n\n\nTelegram Formatting Rules:\n\nAlways format your responses using Telegram-compatible Markdown (not HTML).\n\nEscape all special Markdown characters as required by Telegram (including _, *, [, ], (, ), ~, `, >, #, +, -, =, |, {, }, ., and !) unless they are used for formatting.\n\nEnsure every formatting marker (like *, _, or `) is properly closed and not left open.\n\nAvoid nested or indented lists—use simple numbered or bulleted lists only.\n\nNever include unescaped underscores, asterisks, or brackets in plain text.\n\nIf unsure, prefer plain text over formatting to avoid Telegram errors.\n\nDo not exceed Telegram’s message length limit (4096 characters). If the response is long, split it into multiple messages.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        980,
+        340
+      ],
+      "id": "017a494d-2b8e-401f-b702-3e45352d0a80",
+      "name": "Career Chatbot",
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "notes": "Error"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a chat action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Skills Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a chat action": {
+      "main": [
+        [
+          {
+            "node": "Career Chatbot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skills Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quiz Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Quiz Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "Quiz Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "flash 2.5 model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Quiz Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Career Chatbot",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Skills Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Career Inventory": {
+      "ai_tool": [
+        [
+          {
+            "node": "Career Chatbot",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Skills Agent",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Quiz Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Career Chatbot",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Quiz Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Skills Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Career Chatbot": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "8e2d1f54-c48c-44cb-a948-714bfe4f9e96",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "013ba7111d7412b0c21fb6277bf991b003e1a4d5f0ba93954d8bcf66a6d4f18d"
+  },
+  "id": "8kYMLbq09hHAeU5s",
+  "tags": []
+}
